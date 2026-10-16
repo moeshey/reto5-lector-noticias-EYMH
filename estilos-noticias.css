@@ -1,0 +1,666 @@
+/* ==========================================================================
+   ARCHIVO: estilos-noticias.css
+   RETO 5 – Lector de noticias con Fetch y JSON
+   Alumna: Esperanza Yehtenne Monroy Heras
+   --------------------------------------------------------------------------
+   Este archivo da el DISEÑO al archivo noticias.html. Está organizado así:
+     1) Variables de color y medidas (:root)
+     2) Selectores de ELEMENTO   (etiquetas: body, h1, p, button...)
+     3) Selectores de ID         (#encabezado, #contenido...)
+     4) Selectores de CLASE      (.tarjeta, .boton...) y pseudoclases (:hover...)
+     5) Selector de ATRIBUTO     ([hidden])
+     6) Adaptación a pantallas pequeñas (@media)
+   Un comentario CSS empieza con barra-asterisco y termina con asterisco-barra;
+   el navegador lo ignora.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1) VARIABLES (:root)
+   :root es el elemento raíz de la página. Una variable se define con dos
+   guiones (--nombre) y se usa con var(--nombre). Si quiero cambiar un color
+   de toda la página, lo cambio aquí una sola vez.
+   ========================================================================== */
+:root {
+  --tinta: #14213d;          /* azul marino muy oscuro: texto principal y encabezado */
+  --azul: #1f4e8c;           /* azul medio: botones y enlaces */
+  --azul-claro: #dbe7f7;     /* azul muy claro: etiquetas y fondos suaves */
+  --papel: #f6f4ef;          /* color crema: fondo de la página (como papel de periódico) */
+  --blanco: #ffffff;         /* blanco: fondo de las tarjetas */
+  --acento: #f2a900;         /* ámbar: detalles y línea del encabezado */
+  --alerta: #8f1d1d;         /* rojo oscuro: textos de error (siempre con icono y borde) */
+  --alerta-fondo: #fdeaea;   /* rojo muy claro: fondo de los errores */
+  --texto-suave: #43516a;    /* gris azulado: textos secundarios */
+  --borde: #7a8aa3;          /* gris azulado más oscuro: bordes de campos y tarjetas (contraste 3.5:1 sobre blanco) */
+
+  --radio: 14px;             /* esquinas redondeadas */
+  --sombra: 0 2px 8px rgba(20, 33, 61, 0.10);          /* sombra suave */
+  --sombra-fuerte: 0 12px 28px rgba(20, 33, 61, 0.22); /* sombra al pasar el cursor */
+  --transicion: 0.2s ease;   /* duración de las animaciones */
+}
+
+
+/* ==========================================================================
+   2) SELECTORES DE ELEMENTO
+   Afectan a TODAS las etiquetas de ese tipo.
+   ========================================================================== */
+
+/* El asterisco (*) selecciona todos los elementos. border-box hace que el borde y
+   el relleno (padding) cuenten dentro del ancho, así las medidas son más fáciles */
+* {
+  box-sizing: border-box;
+}
+
+/* body: todo el contenido visible de la página */
+body {
+  margin: 0;                                   /* quita el margen que trae el navegador */
+  font-family: "Nunito", "Segoe UI", Arial, sans-serif; /* Nunito; si falla, otra fuente */
+  font-size: 1rem;                             /* tamaño base (16 px normalmente) */
+  line-height: 1.6;                            /* espacio entre renglones para leer mejor */
+  color: var(--tinta);                         /* color del texto */
+  background-color: var(--papel);              /* fondo crema */
+}
+
+/* h1: título principal */
+h1 {
+  margin: 0 0 6px;                             /* solo margen abajo */
+  font-family: "Playfair Display", Georgia, serif; /* tipografía de periódico */
+  font-size: clamp(1.9rem, 5vw, 2.8rem);       /* crece o se encoge según el ancho, con mínimo y máximo */
+  line-height: 1.15;
+}
+
+/* h2: títulos de las noticias y de los paneles */
+h2 {
+  margin: 0 0 8px;
+  font-family: "Playfair Display", Georgia, serif;
+  line-height: 1.25;
+}
+
+/* p: párrafos */
+p {
+  margin: 0 0 10px;
+}
+
+/* a: enlaces */
+a {
+  color: var(--azul);
+  font-weight: 700;
+}
+
+/* label: etiquetas de los campos */
+label {
+  display: block;                              /* cada etiqueta ocupa su propio renglón */
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+/* select e input: campos del formulario (mismo estilo para todos, así se ven uniformes) */
+select,
+input {
+  width: 100%;                                 /* ocupan todo el ancho de su contenedor */
+  min-height: 44px;                            /* altura mínima cómoda para tocar en el celular */
+  padding: 8px 12px;                           /* espacio interno */
+  font-family: inherit;                        /* usan la misma fuente que la página */
+  font-size: 1rem;
+  color: var(--tinta);
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);              /* borde definido para que se vean bien */
+  border-radius: 10px;
+  transition: border-color var(--transicion), box-shadow var(--transicion);
+}
+
+/* Selector de elemento con pseudoclase :hover (cuando el cursor está encima) */
+select:hover,
+input:hover {
+  border-color: var(--azul);
+}
+
+/* :focus (cuando el campo está seleccionado): borde azul y halo para que se note */
+select:focus,
+input:focus {
+  outline: none;                               /* quita el contorno por defecto... */
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(31, 78, 140, 0.30); /* ...y lo reemplaza por un halo visible */
+}
+
+/* button: todos los botones heredan la fuente de la página */
+button {
+  font-family: inherit;
+  cursor: pointer;                             /* manita al pasar el cursor */
+}
+
+/* summary: texto clicable de <details> */
+summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--azul);
+}
+
+/* figure e img: la imagen se ajusta al ancho disponible */
+figure {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+
+/* ==========================================================================
+   3) SELECTORES DE ID  (#nombre)
+   Un id es único: cada uno se usa en un solo elemento del HTML.
+   ========================================================================== */
+
+/* #encabezado: franja superior con degradado azul */
+#encabezado {
+  padding: 32px 16px 28px;
+  text-align: center;
+  color: var(--blanco);
+  background-color: var(--tinta);              /* color de respaldo si el degradado falla */
+  background-image: linear-gradient(135deg, var(--tinta), var(--azul)); /* degradado diagonal */
+  border-bottom: 6px solid var(--acento);      /* línea ámbar debajo */
+}
+
+/* #contenido: columna central; margin auto la centra en pantallas grandes */
+#contenido {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* #controles: barra con los filtros. Se define con Flexbox en la clase .controles */
+
+/* #detalle: ventana emergente (<dialog>) */
+#detalle {
+  width: min(680px, 92vw);                     /* 680 px como máximo, o 92 % del ancho en celular */
+  max-height: 90vh;                            /* nunca más alto que la pantalla */
+  padding: 0;
+  color: var(--tinta);
+  background-color: var(--blanco);
+  border: 0;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-fuerte);
+  overflow: auto;                              /* si el texto es largo, aparece desplazamiento */
+}
+
+/* ::backdrop es el fondo que tapa la página cuando el <dialog> está abierto */
+#detalle::backdrop {
+  background-color: rgba(20, 33, 61, 0.65);
+}
+
+/* #btn-refrescar: botón de actualizar; ocupa su ancho natural */
+#btn-refrescar {
+  min-width: 200px;
+}
+
+
+/* ==========================================================================
+   4) SELECTORES DE CLASE  (.nombre)
+   Una clase se puede usar en muchos elementos.
+   ========================================================================== */
+
+/* ----- Lema del encabezado ----- */
+.lema {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--azul-claro);
+}
+
+/* ----- Barra de controles (Flexbox) ----- */
+.controles {
+  display: flex;                               /* Flexbox: coloca los campos en fila */
+  flex-wrap: wrap;                             /* si no caben, pasan al siguiente renglón */
+  align-items: flex-end;                       /* alinea los campos por abajo, junto al botón */
+  gap: 14px;                                   /* separación entre campos */
+  padding: 18px;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.campo {
+  flex: 1 1 180px;                             /* puede crecer y encogerse; base de 180 px */
+}
+
+.campo-ancho {
+  flex: 2 1 260px;                             /* el campo de búsqueda es más ancho */
+}
+
+/* ----- Botones: base común + variantes (para que todos se vean uniformes) ----- */
+.boton {
+  display: inline-flex;                        /* permite centrar icono y texto */
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;                       /* quita el subrayado cuando es un enlace <a> */
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: background-color var(--transicion), color var(--transicion),
+              border-color var(--transicion), transform var(--transicion),
+              box-shadow var(--transicion);
+}
+
+/* Variante principal: azul con letras blancas (contraste alto) */
+.boton-principal {
+  color: var(--blanco);
+  background-color: var(--azul);
+  border-color: var(--azul);
+}
+
+/* Variante secundaria: blanca con borde azul */
+.boton-secundario {
+  color: var(--azul);
+  background-color: var(--blanco);
+  border-color: var(--azul);
+}
+
+/* Efecto HOVER para todos los botones: el botón sube un poco y recibe sombra */
+.boton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(20, 33, 61, 0.25);
+}
+
+.boton-principal:hover {
+  background-color: var(--tinta);
+  border-color: var(--tinta);
+}
+
+.boton-secundario:hover {
+  color: var(--blanco);
+  background-color: var(--azul);
+}
+
+/* :active (mientras se presiona): vuelve a su lugar, como botón que se hunde */
+.boton:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* :focus-visible (al navegar con teclado Tab): contorno ámbar muy visible */
+.boton:focus-visible,
+.boton-cerrar:focus-visible,
+.enlace-titulo:focus-visible,
+summary:focus-visible,
+a:focus-visible {
+  outline: 4px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* :disabled (botón bloqueado mientras se cargan las noticias) */
+.boton:disabled {
+  opacity: 0.65;
+  cursor: wait;                                /* cursor de espera */
+  transform: none;
+  box-shadow: none;
+}
+
+/* El icono ↻ gira mientras se actualizan las noticias (la clase .girando la pone JavaScript) */
+.icono {
+  display: inline-block;
+}
+
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+/* @keyframes define una animación: de 0 grados a 360 grados */
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ----- Bloque para escribir la clave de la API ----- */
+.config-clave {
+  margin-top: 14px;
+  padding: 12px 18px;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.form-clave {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.form-clave input {
+  flex: 1 1 240px;                             /* el campo ocupa el espacio sobrante */
+  width: auto;
+}
+
+.form-clave label {
+  flex-basis: 100%;                            /* la etiqueta ocupa un renglón completo */
+  margin-bottom: 0;
+}
+
+.mensaje-clave {
+  flex-basis: 100%;
+  margin: 0;
+  font-weight: 700;
+  color: var(--azul);
+}
+
+.ayuda-clave {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+/* ----- Línea con la hora de actualización ----- */
+.info-actualizacion {
+  margin: 18px 4px 12px;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+/* ----- Aviso (error que no borra las noticias) y panel de estado ----- */
+.aviso {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: var(--alerta);
+  background-color: var(--alerta-fondo);
+  border: 2px solid var(--alerta);             /* borde: el error no depende solo del color */
+  border-left-width: 10px;                     /* borde izquierdo más grueso como marca visual */
+  border-radius: 10px;
+}
+
+.estado {
+  max-width: 640px;
+  margin: 24px auto;
+  padding: 28px 24px;
+  text-align: center;
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+/* Variantes del panel: la clase la pone JavaScript según el tipo de problema */
+.estado-error {
+  border-color: var(--alerta);
+  background-color: var(--alerta-fondo);
+}
+
+.estado-error .estado-titulo {
+  color: var(--alerta);
+}
+
+.estado-icono {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.estado-titulo {
+  font-size: 1.5rem;
+}
+
+.estado-mensaje {
+  color: var(--texto-suave);
+}
+
+.estado-error .estado-mensaje {
+  color: var(--tinta);                         /* sobre fondo rosa se usa texto más oscuro para el contraste */
+}
+
+.estado-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ----- Rejilla de noticias (CSS Grid) ----- */
+.rejilla {
+  display: grid;                               /* Grid: acomoda las tarjetas en columnas */
+  /* auto-fill + minmax: tantas columnas de al menos 290 px como quepan; todas del mismo ancho */
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 22px;
+}
+
+/* ----- Tarjeta de noticia ----- */
+.tarjeta {
+  display: flex;                               /* Flexbox vertical: imagen arriba, texto abajo */
+  flex-direction: column;
+  overflow: hidden;                            /* la imagen no se sale de las esquinas redondeadas */
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  transition: transform var(--transicion), box-shadow var(--transicion), border-color var(--transicion);
+}
+
+/* Efecto HOVER de la tarjeta: sube, se agranda la sombra y el borde se pone azul */
+.tarjeta:hover {
+  transform: translateY(-6px);
+  border-color: var(--azul);
+  box-shadow: var(--sombra-fuerte);
+}
+
+.tarjeta-imagen {
+  aspect-ratio: 16 / 9;                        /* proporción de video: todas las imágenes miden igual */
+  background-color: var(--azul-claro);
+  background-image: linear-gradient(135deg, var(--azul-claro), #b7cdea);
+}
+
+.tarjeta-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                           /* recorta la imagen para llenar el espacio sin deformarla */
+}
+
+/* Marcador cuando la noticia no trae imagen */
+.sin-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--azul);
+}
+
+.tarjeta-cuerpo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;                                     /* el cuerpo ocupa el alto sobrante: todas las tarjetas se igualan */
+  padding: 16px 18px 18px;
+}
+
+.tarjeta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+/* Etiqueta con el nombre de la fuente (por ejemplo, el periódico) */
+.etiqueta {
+  padding: 2px 10px;
+  font-weight: 700;
+  color: var(--tinta);
+  background-color: var(--azul-claro);
+  border-radius: 999px;                        /* valor enorme = bordes totalmente redondos */
+}
+
+.tarjeta-titulo {
+  font-size: 1.2rem;
+}
+
+/* El título es un <button> para que se pueda hacer clic y usar con teclado,
+   pero se ve como texto de título */
+.enlace-titulo {
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: var(--tinta);
+  text-align: left;
+  background: none;
+  border: 0;
+  transition: color var(--transicion);
+}
+
+.enlace-titulo:hover {
+  color: var(--azul);
+  text-decoration: underline;                  /* subrayado: indica que se puede hacer clic */
+}
+
+.tarjeta-resumen {
+  flex: 1;                                     /* empuja el botón al fondo de la tarjeta */
+  color: var(--texto-suave);
+}
+
+/* ----- Tarjetas de carga ("esqueletos") que se ven mientras llegan los datos ----- */
+.esqueleto {
+  min-height: 300px;
+  background-color: #e6e9ef;
+  background-image: linear-gradient(90deg, #e6e9ef 25%, #f4f6fa 50%, #e6e9ef 75%);
+  background-size: 200% 100%;
+  border-radius: var(--radio);
+  animation: brillo 1.4s ease infinite;
+}
+
+@keyframes brillo {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ----- Ventana de detalle de la noticia ----- */
+.detalle-contenido {
+  position: relative;                          /* sirve de referencia para colocar el botón ✕ */
+  padding: 24px;
+}
+
+.detalle-figura {
+  margin: 0 0 16px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.detalle-figura img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+.detalle-titulo {
+  margin-top: 4px;
+  padding-right: 40px;                         /* deja espacio para que el título no tape el botón ✕ */
+  font-size: 1.6rem;
+}
+
+.detalle-texto {
+  font-size: 1.05rem;
+}
+
+.detalle-texto:empty {
+  display: none;                               /* :empty oculta el párrafo si no tiene texto */
+}
+
+.boton-cerrar {
+  position: absolute;                          /* se coloca en la esquina superior derecha */
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--tinta);
+  background-color: var(--blanco);
+  border: 2px solid var(--borde);
+  border-radius: 50%;
+  transition: background-color var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+
+.boton-cerrar:hover {
+  color: var(--blanco);
+  background-color: var(--tinta);
+  border-color: var(--tinta);
+}
+
+/* ----- Pie de página (Flexbox) ----- */
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 16px;
+  font-size: 0.9rem;
+  color: var(--blanco);
+  background-color: var(--tinta);
+}
+
+.resaltado {
+  padding: 2px 12px;
+  font-weight: 700;
+  color: var(--tinta);
+  background-color: var(--acento);
+  border-radius: 999px;
+}
+
+
+/* ==========================================================================
+   5) SELECTOR DE ATRIBUTO  [hidden]
+   Los elementos con el atributo hidden se ocultan. Se pone !important porque
+   algunas clases (como .estado o .aviso) cambian el display y, sin esto,
+   el atributo hidden no tendría efecto.
+   ========================================================================== */
+[hidden] {
+  display: none !important;
+}
+
+
+/* ==========================================================================
+   6) ADAPTACIÓN A PANTALLAS PEQUEÑAS (@media)
+   Estas reglas solo se aplican si la pantalla mide 600 px de ancho o menos.
+   ========================================================================== */
+@media (max-width: 600px) {
+  #contenido {
+    padding: 16px 12px 32px;
+  }
+
+  .rejilla {
+    grid-template-columns: 1fr;                /* una sola columna en el celular */
+  }
+
+  #btn-refrescar {
+    width: 100%;                               /* el botón ocupa todo el ancho */
+  }
+
+  .detalle-contenido {
+    padding: 18px;
+  }
+}
+
+/* Si la persona pidió "reducir movimiento" en su sistema, se quitan las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

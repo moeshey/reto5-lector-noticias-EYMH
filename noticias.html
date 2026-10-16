@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     ARCHIVO: noticias.html
+     RETO 5 – Crear un lector de noticias utilizando AJAX y JSON en JavaScript
+     Alumna: Esperanza Yehtenne Monroy Heras
+     ------------------------------------------------------------
+     Este archivo contiene la ESTRUCTURA (HTML) del lector de noticias.
+     El diseño está en estilos-noticias.css y la funcionalidad (Fetch y JSON)
+     está en noticias.js; los tres archivos deben estar en la misma carpeta.
+     Todo texto dentro de un comentario HTML NO se muestra en la página.
+     ============================================================ -->
+<html lang="es">
+<!-- lang="es" indica que la página está en español -->
+
+<head>
+  <!-- <head> guarda información que NO se ve en la página -->
+
+  <!-- charset UTF-8: permite usar acentos, ñ y símbolos como ↻ y ✕ -->
+  <meta charset="UTF-8">
+
+  <!-- viewport: hace que la página se adapte al ancho de un celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- <title>: texto que aparece en la pestaña del navegador -->
+  <title>Lector de noticias</title>
+
+  <!-- Fuentes de Google Fonts: Playfair Display (títulos de noticias) y Nunito (textos).
+       Si no cargan, el CSS usa una fuente de respaldo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- <link rel="stylesheet">: conecta este HTML con el archivo CSS (el diseño).
+       href es la ruta del archivo -->
+  <link rel="stylesheet" href="estilos-noticias.css">
+</head>
+
+<body>
+  <!-- <body> contiene todo lo que SÍ se ve en la página -->
+
+  <!-- ===== SECCIÓN 1: ENCABEZADO =====
+       <header> es la parte superior de la página (lo pide el reto).
+       id="encabezado" es un nombre único; el CSS lo encuentra con #encabezado -->
+  <header id="encabezado">
+    <!-- <h1>: título principal de la página -->
+    <h1>Lector de noticias</h1>
+    <!-- <p class="lema">: frase corta debajo del título -->
+    <p class="lema">Titulares obtenidos con Fetch en formato JSON</p>
+  </header>
+
+  <!-- ===== SECCIÓN 2: CUERPO PRINCIPAL =====
+       <main> contiene el contenido principal (lo pide el reto) -->
+  <main id="contenido">
+
+    <!-- ===== 2.1 CONTROLES =====
+         Un <form> agrupa los controles. No se envía a ningún servidor:
+         JavaScript lo controla y evita que la página se recargue -->
+    <form id="controles" class="controles" aria-label="Controles del lector de noticias">
+
+      <!-- Cada <label> se une a su campo con for="id" para que al hacer clic en el texto
+           se seleccione el campo (y para los lectores de pantalla) -->
+      <div class="campo">
+        <label for="categoria">Categoría</label>
+        <!-- <select>: lista desplegable; value es el dato que se manda a la API -->
+        <select id="categoria" name="categoria">
+          <option value="general">General</option>
+          <option value="world">Mundo</option>
+          <option value="nation">Nacional</option>
+          <option value="business">Negocios</option>
+          <option value="technology">Tecnología</option>
+          <option value="entertainment">Entretenimiento</option>
+          <option value="sports">Deportes</option>
+          <option value="science">Ciencia</option>
+          <option value="health">Salud</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="fuente">Fuente de datos</label>
+        <!-- Permite elegir entre la API real (GNews) y noticias de ejemplo sin internet -->
+        <select id="fuente" name="fuente">
+          <option value="gnews">GNews</option>
+          <option value="demo">Demostración</option>
+        </select>
+      </div>
+
+      <div class="campo campo-ancho">
+        <label for="filtro">Buscar en estas noticias</label>
+        <!-- type="search": campo de búsqueda; filtra las noticias YA cargadas sin llamar a la API -->
+        <input type="search" id="filtro" name="filtro" placeholder="Escribe una palabra del título…" autocomplete="off">
+      </div>
+
+      <!-- Botón para refrescar las noticias sin recargar la página (lo pide el reto).
+           type="button" evita que el formulario se envíe -->
+      <button type="button" id="btn-refrescar" class="boton boton-principal">
+        <span class="icono" aria-hidden="true">↻</span> Actualizar noticias
+      </button>
+    </form>
+
+    <!-- ===== 2.2 CLAVE DE LA API =====
+         <details> crea un bloque que se abre y se cierra al hacer clic en <summary> -->
+    <details id="config-clave" class="config-clave">
+      <summary>Configurar mi clave de GNews</summary>
+      <form id="form-clave" class="form-clave">
+        <label for="clave">Clave (API key)</label>
+        <!-- type="password": oculta lo que se escribe, porque la clave es personal -->
+        <input type="password" id="clave" name="clave" placeholder="Pega aquí tu clave" autocomplete="off">
+        <button type="submit" class="boton boton-secundario">Guardar clave</button>
+        <!-- aria-live="polite": un lector de pantalla anuncia el mensaje cuando cambia -->
+        <p id="mensaje-clave" class="mensaje-clave" aria-live="polite"></p>
+      </form>
+      <p class="ayuda-clave">La clave gratuita se obtiene al registrarse en
+        <a href="https://gnews.io/" target="_blank" rel="noopener noreferrer">gnews.io</a>.
+        Se guarda solo en este navegador.</p>
+    </details>
+
+    <!-- ===== 2.3 INFORMACIÓN DE ACTUALIZACIÓN =====
+         Aquí JavaScript escribe la hora de la última actualización y cuántas noticias hay -->
+    <p id="info-actualizacion" class="info-actualizacion" aria-live="polite"></p>
+
+    <!-- ===== 2.4 AVISO Y ESTADOS =====
+         #aviso: banner pequeño para errores que NO borran las noticias que ya estaban en pantalla.
+         El atributo hidden lo mantiene oculto hasta que JavaScript lo muestre -->
+    <div id="aviso" class="aviso" role="alert" hidden></div>
+
+    <!-- #estado: panel grande para cuando no hay noticias que mostrar (error, vacío o falta la clave).
+         role="status" y aria-live="polite" avisan a los lectores de pantalla -->
+    <section id="estado" class="estado" role="status" aria-live="polite" hidden>
+      <span id="estado-icono" class="estado-icono" aria-hidden="true"></span>
+      <h2 id="estado-titulo" class="estado-titulo"></h2>
+      <p id="estado-mensaje" class="estado-mensaje"></p>
+      <div class="estado-acciones">
+        <button type="button" id="btn-reintentar" class="boton boton-principal">Reintentar</button>
+        <button type="button" id="btn-demo" class="boton boton-secundario">Ver noticias de ejemplo</button>
+      </div>
+    </section>
+
+    <!-- ===== 2.5 ÁREA DE NOTICIAS =====
+         Es el área específica donde JavaScript inserta las tarjetas de noticias (lo pide el reto).
+         aria-busy="true" indica a los lectores de pantalla que el contenido se está cargando -->
+    <section id="area-noticias" class="rejilla" aria-label="Noticias" aria-busy="false"></section>
+
+  </main> <!-- fin de #contenido -->
+
+  <!-- ===== 2.6 VENTANA PARA LEER LA NOTICIA COMPLETA =====
+       <dialog> es una ventana emergente nativa de HTML. JavaScript la abre con showModal().
+       Se cierra con el botón ✕, con la tecla Esc o haciendo clic fuera de ella -->
+  <dialog id="detalle" class="detalle" aria-labelledby="detalle-titulo">
+    <!-- Este <div> interno sirve para distinguir un clic dentro de la ventana de un clic fuera -->
+    <div class="detalle-contenido">
+      <button type="button" id="btn-cerrar" class="boton-cerrar" aria-label="Cerrar la noticia">✕</button>
+      <!-- <figure> agrupa la imagen de la noticia; se oculta si la noticia no trae imagen -->
+      <figure id="detalle-figura" class="detalle-figura" hidden>
+        <img id="detalle-imagen" alt="">
+      </figure>
+      <p id="detalle-meta" class="tarjeta-meta"></p>
+      <h2 id="detalle-titulo" class="detalle-titulo"></h2>
+      <p id="detalle-descripcion" class="detalle-texto"></p>
+      <p id="detalle-texto" class="detalle-texto"></p>
+      <!-- Enlace a la noticia original: el servicio solo entrega un fragmento del texto -->
+      <a id="detalle-enlace" class="boton boton-principal" target="_blank" rel="noopener noreferrer" hidden>Leer la noticia completa en el sitio original</a>
+    </div>
+  </dialog>
+
+  <!-- Pie de la página; los <span> con class="resaltado" llevan fondo de color -->
+  <footer class="pie">
+    <span>Reto 5</span>
+    <span class="resaltado">Esperanza Yehtenne Monroy Heras</span>
+    <span>Ingeniería en Desarrollo de Software</span>
+    <span class="resaltado">UVEG</span>
+  </footer>
+
+  <!-- <script src="...">: conecta el archivo JavaScript (la funcionalidad).
+       Va al FINAL del body para que el navegador cargue primero los elementos de arriba;
+       así el código ya puede encontrarlos. -->
+  <script src="noticias.js"></script>
+</body>
+</html>
